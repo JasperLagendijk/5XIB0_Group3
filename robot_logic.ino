@@ -1,4 +1,4 @@
-#include <Servo.h>
+//#include <Servo.h>
 #include "robot_base.h"
 
 void setup() {
@@ -11,4 +11,15 @@ void setup() {
   pinMode(ultrasoundSensor, INPUT);
   pinMode(grabberServo, OUTPUT);
   pinMode(ultrasoundServo, OUTPUT);
+  Servo servo_left;
+  Servo servo_right;
+  Servo servo_grabber;
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
+  servo_grabber.attach(grabberServo);
+  
+}
+
+void loop () {
+
 }

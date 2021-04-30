@@ -1,12 +1,23 @@
 #include <Servo.h>
+#include <Arduino.h>
 
 Servo servo_left;
 Servo servo_right;
 Servo servo_grabber;
 
-servo_left.attach(servoLeft);
-servo_right.attach(servoRight);
-servo_grabber.attach(grabberServo);
+#define RX_ZigBee 0
+#define TX_ZigBee 1
+//Digital pins 2-6 unused
+#define encoderLeft 7
+#define encoderRight 8
+#define ultrasoundSensor 9 //PWM
+#define grabberServo 10 //PWM
+#define ultrasoundServo 11 //PWM
+#define servoLeft 12
+#define servoRight 13
+
+#define CIRCUMFERENCE 2*0.034*PI // In meters
+#define WIDTHROBOT 0.104 // In meters
 
 
 void forward() {
@@ -27,10 +38,10 @@ void brake() {
 
 void turn(double psi, double * phi) {
   double distance;// = ((psi-)/2)*WIDTHROBOT;
-   if(psi >= PI) {
+   if(psi >= 3.141) {
     servo_left.writeMicroseconds(1400);
     servo_right.writeMicroseconds(1400);
-    distance = ((psi-PI)/2)*0.104; //WIDTHROBOT;
+    distance = ((psi-3.141)/2)*0.104; //WIDTHROBOT;
   } else {
     servo_left.writeMicroseconds(1600);
     servo_right.writeMicroseconds(1600);
@@ -38,7 +49,7 @@ void turn(double psi, double * phi) {
   }
   
   
-  Serial.println("Test 2.0");
+  //Serial.println("Test 2.0");
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -47,8 +58,8 @@ void turn(double psi, double * phi) {
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;
-  Serial.println(expectedRotations);
-  Serial.println(rotations);
+  ///Serial.println(expectedRotations);
+  //Serial.println(rotations);
  
   
 
@@ -88,9 +99,9 @@ void moveTo(double x_start, double y_start, double x_end, double y_end) {
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;// / CIRCUMFERENCE;
-  Serial.println(distance);
-  Serial.println(CIRCUMFERENCE);
-  Serial.println(expectedRotations);
+  //Serial.println(distance);
+  //Serial.println(CIRCUMFERENCE);
+  //Serial.println(expectedRotations);
   
   forward();
   
@@ -111,7 +122,7 @@ void moveTo(double x_start, double y_start, double x_end, double y_end) {
       //}
       prev_left = left;
       prev_right = right;
-      Serial.println(rotations);
+      //Serial.println(rotations);
   }
-  brake(&dir);  
+  brake();  
 }
