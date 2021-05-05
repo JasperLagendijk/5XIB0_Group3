@@ -87,13 +87,13 @@ void turn(double psi, double * phi) {
     brake();
 }
 
-void moveTo(double x_start, double y_start, double x_end, double y_end, doulbe * phi) {
+void moveTo(double x_start, double y_start, double x_end, double y_end, double * phi) {
   //x_start < x_end
   double x_current = x_start;
   double y_current = y_start;
   double dx = x_end-x_start;
   double dy = y_end-y_start;
-  double distance = sqrt((dx)^2+(dy)^2);
+  double distance = sqrt(pow(dx, 2)+pow(dy, 2));
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -105,7 +105,7 @@ void moveTo(double x_start, double y_start, double x_end, double y_end, doulbe *
   //Serial.println(distance);
   //Serial.println(CIRCUMFERENCE);
   //Serial.println(expectedRotations);
-  doulbe psi = atan2(dx, dy);
+  double psi = atan2(dx, dy);
   turn(psi, phi);
   forward();
 
