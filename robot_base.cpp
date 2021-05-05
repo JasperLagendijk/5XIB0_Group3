@@ -1,5 +1,6 @@
 #include <Servo.h>
 #include <Arduino.h>
+#include <math.h>
 
 Servo servo_left;
 Servo servo_right;
@@ -22,7 +23,7 @@ Servo servo_grabber;
 
 void forward() {
   servo_left.writeMicroseconds(1600);
-  servo_right.writeMicroseconds(1400); 
+  servo_right.writeMicroseconds(1400);
 }
 
 void backward() {
@@ -47,8 +48,8 @@ void turn(double psi, double * phi) {
     servo_right.writeMicroseconds(1600);
     distance = ((psi)/2)*0.104; //WIDTHROBOT;
   }
-  
-  
+
+
   //Serial.println("Test 2.0");
   int left, right;
   double circumference = 0.21;
@@ -60,8 +61,8 @@ void turn(double psi, double * phi) {
   double expectedRotations = distance/circumference;
   ///Serial.println(expectedRotations);
   //Serial.println(rotations);
- 
-  
+
+
 
     while(rotations < expectedRotations) {
       left = digitalRead(encoderLeft);
@@ -81,16 +82,18 @@ void turn(double psi, double * phi) {
       prev_left = left;
       prev_right = right;
       Serial.println(rotations);
-  
+
     }
     brake();
 }
 
-void moveTo(double x_start, double y_start, double x_end, double y_end) {
+void moveTo(double x_start, double y_start, double x_end, double y_end, doulbe * phi) {
   //x_start < x_end
   double x_current = x_start;
   double y_current = y_start;
-  double distance = x_end-x_start; 
+  double dx = x_end-x_start;
+  double dy = y_end-y_start;
+  double distance = sqrt((dx)^2+(dy)^2);
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -102,9 +105,10 @@ void moveTo(double x_start, double y_start, double x_end, double y_end) {
   //Serial.println(distance);
   //Serial.println(CIRCUMFERENCE);
   //Serial.println(expectedRotations);
-  
+  doulbe psi = atan2(dx, dy);
+  turn(psi, phi);
   forward();
-  
+
   while(rotations < expectedRotations) {
       left = digitalRead(encoderLeft);
       right = digitalRead(encoderRight);
@@ -124,5 +128,5 @@ void moveTo(double x_start, double y_start, double x_end, double y_end) {
       prev_right = right;
       //Serial.println(rotations);
   }
-  brake();  
+  brake();
 }

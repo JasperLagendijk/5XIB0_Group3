@@ -19,4 +19,4 @@ void forward();
 void backward();
 void brake();
 void turn(double psi, double * phi);
-void moveTo(double x_start, double y_start, double x_end, double y_end);
+void moveTo(double x_start, double y_start, double x_end, double y_end, doulbe * phi, doulbe psi);
