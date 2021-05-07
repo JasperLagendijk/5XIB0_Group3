@@ -21,11 +21,14 @@ Servo servo_grabber;
 #define WIDTHROBOT 0.104 // In meters
 
 
-void forward() {
+void forward() 
+{
+  servo_grabber.attach(grabberServo);
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
   servo_left.writeMicroseconds(1600);
   servo_right.writeMicroseconds(1400);
+  servo_grabber.write(20);
 }
 
 void backward() {
@@ -36,6 +39,7 @@ void backward() {
 }
 
 void brake() {
+  servo_grabber.attach(grabberServo);
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
   servo_left.writeMicroseconds(1500);
@@ -44,6 +48,8 @@ void brake() {
 
 
 void turn(double psi, double * phi) {
+  servo_grabber.attach(grabberServo);
+  servo_grabber.write(20);
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
   double distance;// = ((psi-)/2)*WIDTHROBOT;
@@ -67,7 +73,12 @@ void turn(double psi, double * phi) {
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;
-  ///Serial.println(expectedRotations);
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  Serial.print("Circumference: ");
+  Serial.println(circumference);
+  Serial.print("Expected rotations: ");
+  Serial.println(expectedRotations);
   //Serial.println(rotations);
 
 
@@ -93,6 +104,9 @@ void turn(double psi, double * phi) {
 
     }
     brake();
+    servo_grabber.detach();
+    servo_left.detach();
+    servo_right.detach();
 }
 
 void moveTo(double x_start, double y_start, double x_end, double y_end, double * phi) {

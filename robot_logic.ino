@@ -12,7 +12,7 @@
 #define servoLeft 12
 #define servoRight 13
 */
-double phi;
+double phi = 0;
 /*  Servo servo_left;
   Servo servo_right;
   Servo servo_grabber;
@@ -34,10 +34,11 @@ void setup() {
 }
 
 void loop () {
-
-  delay(1000);
-  moveTo(0, 0, 2, 0, &phi);
   
+  delay(1000);
+  moveTo(0, 0, 2, 4, &phi);
+  //int psi = 0.25*3.141*i;
+  //turn(psi, &phi);
   //servo_left.writeMicroseconds(1600);
   //servo_right.writeMicroseconds(1400);
   delay(2000);
