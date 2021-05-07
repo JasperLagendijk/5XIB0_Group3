@@ -22,22 +22,30 @@ Servo servo_grabber;
 
 
 void forward() {
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
   servo_left.writeMicroseconds(1600);
   servo_right.writeMicroseconds(1400);
 }
 
 void backward() {
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
   servo_left.writeMicroseconds(1400);
   servo_right.writeMicroseconds(1600);
 }
 
 void brake() {
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
   servo_left.writeMicroseconds(1500);
   servo_right.writeMicroseconds(1500);
 }
 
 
 void turn(double psi, double * phi) {
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
   double distance;// = ((psi-)/2)*WIDTHROBOT;
    if(psi >= 3.141) {
     servo_left.writeMicroseconds(1400);
@@ -88,6 +96,8 @@ void turn(double psi, double * phi) {
 }
 
 void moveTo(double x_start, double y_start, double x_end, double y_end, double * phi) {
+  servo_left.attach(servoLeft);
+  servo_right.attach(servoRight);
   //x_start < x_end
   double x_current = x_start;
   double y_current = y_start;
@@ -105,7 +115,8 @@ void moveTo(double x_start, double y_start, double x_end, double y_end, double *
   //Serial.println(distance);
   //Serial.println(CIRCUMFERENCE);
   //Serial.println(expectedRotations);
-  double psi = atan2(dx, dy);
+  double psi = atan2(dy, dx);
+  Serial.println(psi);
   turn(psi, phi);
   forward();
 
