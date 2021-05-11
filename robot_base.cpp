@@ -46,7 +46,7 @@ double drive(double distance, int dir)
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;// / CIRCUMFERENCE;
-
+  int offset_power = 10;
   servo_grabber.write(20);
   while(rotations < expectedRotations) {
     if(dir) { // Drive forward
@@ -69,19 +69,19 @@ double drive(double distance, int dir)
     }
     if (rotations_l - rotations_r >= 0.125) { //If left wheel faster -> slow down left, speed up right
       if(dir) {
-        mod_left -= 10;
-        mod_right -= 10;
+        mod_left -= offset_power;
+        mod_right -= offset_power;
       } else {
-        mod_left += 10;
-        mod_right += 10;
+        mod_left += offset_power;
+        mod_right += offset_power;
       }
     } else if (rotations_r - rotations_r >= 0.125) { // If right wheel faster -> speed up left, slow down right
       if(dir) {
-        mod_left += 10;
-        mod_right += 10;
+        mod_left += offset_power;
+        mod_right += offset_power;
       } else {
-        mod_left -= 10;
-        mod_right -= 10;
+        mod_left -= offset_power;
+        mod_right -= offset_power;
       }
     }
 
