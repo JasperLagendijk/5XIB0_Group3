@@ -19,8 +19,8 @@
 //Servo servo_grabber;
 
 
-void forward();
-void backward();
+void forward(double distance);
+void backward(double distance);
 void brake();
 void turn(double psi, double * phi);
 void moveTo(double x_start, double y_start, double x_end, double y_end, double * phi);
