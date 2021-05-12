@@ -71,10 +71,6 @@ double drive(double distance, int dir)
     right = digitalRead(encoderRight);
     if(left != prev_left) { //1/8th of rotation made left
       rotations_l+= (0.0625);
-      Serial.print("Left: ");
-      Serial.print(rotations_l-rotations_r);
-      Serial.print(" Mod left: ");
-      Serial.println(mod_left);
       }
     if(right != prev_right) { //1/8th of rotation made left
       rotations_r += 0.0625;
@@ -126,16 +122,16 @@ void turn(double psi, double * phi) {
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
   double distance;// = ((psi-)/2)*WIDTHROBOT;
-   if(psi >= 3.141) {
+   if(psi-*phi >= 3.141) {
     servo_left.writeMicroseconds(1400);
     servo_right.writeMicroseconds(1400);
-    distance = ((psi-3.141)/2)*0.104; //WIDTHROBOT;
+    distance = ((psi-*phi-3.141)/2)*0.104; //WIDTHROBOT;
   } else {
     servo_left.writeMicroseconds(1600);
     servo_right.writeMicroseconds(1600);
-    distance = ((psi)/2)*0.104; //WIDTHROBOT;
+    distance = ((psi-*phi)/2)*0.104; //WIDTHROBOT;
   }
-
+  Serial.println(distance);
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -171,9 +167,19 @@ void moveTo(double x_start, double y_start, double x_end, double y_end, double *
   double current_y = y_start;
   double dx = x_end-x_start;
   double dy = y_end-y_start;
+  Serial.print("dx: ");
+  Serial.print(dx);
+  Serial.print(" dy: ");
+  Serial.println(dy);
   double distance = sqrt(pow(dx, 2)+pow(dy, 2));
   double psi = atan2(dy, dx);
+  if(psi < 0) psi += 6.28;
+  Serial.print("Phi: ");
+  Serial.print(*phi);
+  Serial.print(" Psi: ");
+  Serial.println(psi);
   turn(psi, phi);
+  *phi = psi;
   distance = drive(distance, 1);
   current_x += distance*cos(psi);
   current_y += distance*sin(psi);
