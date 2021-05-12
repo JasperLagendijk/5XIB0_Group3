@@ -20,6 +20,14 @@ Servo servo_grabber;
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
 
+int cap(int input, int maximum) {
+  int output;
+  if (abs(input) > maximum) output = input/abs(input)*maximum;
+  else output = input;
+  return output;
+  
+}
+
 void brake() {
   servo_grabber.attach(grabberServo);
   servo_left.attach(servoLeft);
@@ -47,7 +55,8 @@ double drive(double distance, int dir)
   double rotations_r = 0;
   double expectedRotations = distance/circumference;// / CIRCUMFERENCE;
   int offset_power = 10;
-  servo_grabber.write(20);
+  servo_grabber.write(-45);
+  int t = millis();
   while(rotations < expectedRotations) {
     if(dir) { // Drive forward
       servo_left.writeMicroseconds(1600+mod_left);
@@ -62,29 +71,38 @@ double drive(double distance, int dir)
     right = digitalRead(encoderRight);
     if(left != prev_left) { //1/8th of rotation made left
       rotations_l+= (0.0625);
-        //Serial.println(rotations_l);
+      Serial.print("Left: ");
+      Serial.print(rotations_l-rotations_r);
+      Serial.print(" Mod left: ");
+      Serial.println(mod_left);
       }
     if(right != prev_right) { //1/8th of rotation made left
       rotations_r += 0.0625;
     }
-    if (rotations_l - rotations_r >= 0.125) { //If left wheel faster -> slow down left, speed up right
-      if(dir) {
-        mod_left -= offset_power;
-        mod_right -= offset_power;
-      } else {
-        mod_left += offset_power;
-        mod_right += offset_power;
+    
+    if (rotations_l > rotations_r &&  millis()-t  > 1) { //If left wheel faster -> slow down left, speed up right
+        //Serial.println("Rubber ducky");
+        if(dir) {
+          mod_left -= offset_power;
+          mod_right -= offset_power;
+        } else {
+          mod_left += offset_power;
+          mod_right += offset_power;
+        }
+        t = millis();
+      } else if (rotations_r > rotations_l && millis()-t > 1) { // If right wheel faster -> speed up left, slow down right
+        //Serial.println("Wooden ducky");
+        if(dir) {
+          mod_left += offset_power;
+          mod_right += offset_power;
+        } else {
+          mod_left -= offset_power;
+          mod_right -= offset_power;
+        }
+        t = millis();
       }
-    } else if (rotations_r - rotations_r >= 0.125) { // If right wheel faster -> speed up left, slow down right
-      if(dir) {
-        mod_left += offset_power;
-        mod_right += offset_power;
-      } else {
-        mod_left -= offset_power;
-        mod_right -= offset_power;
-      }
-    }
-
+    mod_left = cap(mod_left, 40);
+    mod_right = cap(mod_right, 40);
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
@@ -100,48 +118,6 @@ double drive(double distance, int dir)
   servo_right.detach();
   return distance;
 }
-
-/*void backward(double distance) {
-  servo_grabber.attach(grabberServo);
-  servo_left.attach(servoLeft);
-  servo_right.attach(servoRight);
-
-  int left, right;
-  double circumference = 0.21;
-  int prev_left=left;
-  int prev_right=right;
-  double rotations = 0;
-  double rotations_l = 0;
-  double rotations_r = 0;
-  double expectedRotations = distance/circumference;// / CIRCUMFERENCE;
-
-  servo_left.writeMicroseconds(1400);
-  servo_right.writeMicroseconds(1600);
-  servo_grabber.write(20);
-
-  while(rotations < expectedRotations) {
-      left = digitalRead(encoderLeft);
-      right = digitalRead(encoderRight);
-      if(left != prev_left) { //1/8th of rotation made left
-        rotations_l+= (0.0625);
-        //Serial.println(rotations_l);
-      }
-      if(right != prev_right) { //1/8th of rotation made left
-        rotations_r += 0.0625;
-      }
-      //if (abs(rotations_r - rotations_l) > 1) {
-        //ERROR
-      //} else {
-        rotations = (rotations_l+rotations_r)/2;
-      //}
-      prev_left = left;
-      prev_right = right;
-      //Serial.println(rotations);
-  }
-  brake();
-  servo_left.detach();
-  servo_right.detach();
-}*/
 
 
 void turn(double psi, double * phi) {
@@ -181,7 +157,7 @@ void turn(double psi, double * phi) {
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
-    Serial.println(rotations);
+    //Serial.println(rotations);
 
     }
     brake();
