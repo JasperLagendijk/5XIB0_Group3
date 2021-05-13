@@ -32,9 +32,36 @@ struct coords {
   coords * prev;
 };
 
-void addObstacle() {
+void addObstacle(coords * head, double x_min, double x_max, double y_min, double y_max) {
+  coords * current  = head;
+  while(current->next != NULL) {
+    current = current->next;
+  }
+
+  current->next = (coords *) malloc(sizeof(coords));
+  current->next->x_min = x_min;
+  current->next->x_max = x_max;
+  current->next->y_min = y_min;
+  current->next->y_max = y_max;
+
+  current->next->next = NULL;
+  current->next->prev = current;
+
 
 }
+
+void removeObstacle(coords ** head) {
+  coords * next_coords = NULL;
+  if (*head == NULL) {
+    return;
+  }
+  next_node = (*head)->next;
+  free(*head);
+  *head = next_node;
+
+  return;
+}
+
 
 void changeObstacle() {
 
