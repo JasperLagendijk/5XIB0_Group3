@@ -20,12 +20,38 @@ Servo servo_grabber;
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
 
+coords * head;
+
+struct coords {
+  double x_max;
+  double y_max;
+  double x_min;
+  double y_min;
+
+  coords * next;
+  coords * prev;
+};
+
+void addObstacle() {
+
+}
+
+void changeObstacle() {
+
+}
+
+void printObstacles() {
+
+}
+
+
+
 int cap(int input, int maximum) {
   int output;
   if (abs(input) > maximum) output = input/abs(input)*maximum;
   else output = input;
   return output;
-  
+
 }
 
 void brake() {
@@ -75,7 +101,7 @@ double drive(double distance, int dir)
     if(right != prev_right) { //1/8th of rotation made left
       rotations_r += 0.0625;
     }
-    
+
     if (rotations_l > rotations_r &&  millis()-t  > 1) { //If left wheel faster -> slow down left, speed up right
         //Serial.println("Rubber ducky");
         if(dir) {
@@ -162,11 +188,11 @@ void turn(double psi, double * phi) {
     servo_right.detach();
   }
 
-void moveTo(double x_start, double y_start, double x_end, double y_end, double * phi) {
-  double current_x = x_start;
-  double current_y = y_start;
-  double dx = x_end-x_start;
-  double dy = y_end-y_start;
+void moveTo(double * x_start, double * y_start, double x_end, double y_end, double * phi) {
+  double current_x = * x_start;
+  double current_y = * y_start;
+  double dx = x_end-*x_start;
+  double dy = y_end-*y_start;
   Serial.print("dx: ");
   Serial.print(dx);
   Serial.print(" dy: ");
@@ -184,6 +210,8 @@ void moveTo(double x_start, double y_start, double x_end, double y_end, double *
   current_x += distance*cos(psi);
   current_y += distance*sin(psi);
   if(current_x == x_end && current_y == y_end) { // Destination reached
+    *x_start = current_x;
+    *y_start = current_y;
     return;
   }
   // Otherwise: obstacle encountered

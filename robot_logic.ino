@@ -13,6 +13,8 @@
 #define servoRight 13
 */
 double phi = 0;
+double x = 0;
+double y = 0;
 /*  Servo servo_left;
   Servo servo_right;
   Servo servo_grabber;
@@ -27,14 +29,13 @@ void setup() {
   pinMode(ultrasoundSensor, INPUT);
   pinMode(grabberServo, OUTPUT);
   pinMode(ultrasoundServo, OUTPUT);
-  
- 
+
+
   //servo_grabber.attach(grabberServo);
-  
+
 }
 
 void loop () {
-  
   delay(1000);
   moveTo(0, 0, 1, 1, &phi);
   //drive(1, 1);
