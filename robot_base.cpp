@@ -20,7 +20,7 @@ Servo servo_grabber;
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
 
-coords * head;
+
 
 struct coords {
   double x_max;
@@ -32,12 +32,42 @@ struct coords {
   coords * prev;
 };
 
+struct node {
+  double x;
+  double y;
+  node * next;
+
+};
+
+coords * head;
+
+void addNode(node * head, double x, double y) {
+  node * current = head;
+  while(current->next != NULL) {
+    current = current->next;
+  }
+  current->next = (node *) malloc(sizeof(node));
+  current->next->x = x;
+  current->next->y = y;
+  current->next->next = NULL;
+}
+
+void popNode(node ** head) {
+  node * next_node = NULL;
+  if (*head == NULL) return;
+
+  next_node = (*head)->next;
+  free(*head);
+  *head = next_node;
+
+
+}
+
 void addObstacle(coords * head, double x_min, double x_max, double y_min, double y_max) {
   coords * current  = head;
   while(current->next != NULL) {
     current = current->next;
   }
-
   current->next = (coords *) malloc(sizeof(coords));
   current->next->x_min = x_min;
   current->next->x_max = x_max;
@@ -46,8 +76,6 @@ void addObstacle(coords * head, double x_min, double x_max, double y_min, double
 
   current->next->next = NULL;
   current->next->prev = current;
-
-
 }
 
 void removeObstacle(coords ** head) {
@@ -62,13 +90,18 @@ void removeObstacle(coords ** head) {
   return;
 }
 
-
-void changeObstacle() {
+int intersection(coords * head, node * start) { //Determine if the line and object intersect 
 
 }
 
-void printObstacles() {
+int determinePath(*x_start, *y_start, coords * head) {
+  node * top;
+  top  = (node *) malloc(sizeof(node));
+  top->x = *x_start;
+  top->y = *y_start;
 
+
+  return 0;
 }
 
 
@@ -130,7 +163,6 @@ double drive(double distance, int dir)
     }
 
     if (rotations_l > rotations_r &&  millis()-t  > 1) { //If left wheel faster -> slow down left, speed up right
-        //Serial.println("Rubber ducky");
         if(dir) {
           mod_left -= offset_power;
           mod_right -= offset_power;
@@ -140,7 +172,6 @@ double drive(double distance, int dir)
         }
         t = millis();
       } else if (rotations_r > rotations_l && millis()-t > 1) { // If right wheel faster -> speed up left, slow down right
-        //Serial.println("Wooden ducky");
         if(dir) {
           mod_left += offset_power;
           mod_right += offset_power;
@@ -169,7 +200,7 @@ double drive(double distance, int dir)
 }
 
 
-void turn(double psi, double * phi) {
+void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi, update phi
   servo_grabber.attach(grabberServo);
   servo_grabber.write(20);
   servo_left.attach(servoLeft);
@@ -215,7 +246,7 @@ void turn(double psi, double * phi) {
     servo_right.detach();
   }
 
-void moveTo(double * x_start, double * y_start, double x_end, double y_end, double * phi) {
+int moveTo(double * x_start, double * y_start, double x_end, double y_end, double * phi) { // Function moves robot to location (x_end, y_end), returns 0 if succesfull, -1 if blocked
   double current_x = * x_start;
   double current_y = * y_start;
   double dx = x_end-*x_start;
@@ -236,12 +267,12 @@ void moveTo(double * x_start, double * y_start, double x_end, double y_end, doub
   distance = drive(distance, 1);
   current_x += distance*cos(psi);
   current_y += distance*sin(psi);
+  *x_start = current_x;
+  *y_start = current_y;
   if(current_x == x_end && current_y == y_end) { // Destination reached
-    *x_start = current_x;
-    *y_start = current_y;
-    return;
-  }
-  // Otherwise: obstacle encountered
+    return 0;
+  } else return -1;   // Otherwise: obstacle encountered
+
 
 
 }
