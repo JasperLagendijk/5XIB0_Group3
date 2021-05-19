@@ -20,92 +20,6 @@ Servo servo_grabber;
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
 
-
-
-struct coords {
-  double x_max;
-  double y_max;
-  double x_min;
-  double y_min;
-
-  coords * next;
-  coords * prev;
-};
-
-struct node {
-  double x;
-  double y;
-  node * next;
-
-};
-
-coords * head;
-
-void addNode(node * head, double x, double y) {
-  node * current = head;
-  while(current->next != NULL) {
-    current = current->next;
-  }
-  current->next = (node *) malloc(sizeof(node));
-  current->next->x = x;
-  current->next->y = y;
-  current->next->next = NULL;
-}
-
-void popNode(node ** head) {
-  node * next_node = NULL;
-  if (*head == NULL) return;
-
-  next_node = (*head)->next;
-  free(*head);
-  *head = next_node;
-
-
-}
-
-void addObstacle(coords * head, double x_min, double x_max, double y_min, double y_max) {
-  coords * current  = head;
-  while(current->next != NULL) {
-    current = current->next;
-  }
-  current->next = (coords *) malloc(sizeof(coords));
-  current->next->x_min = x_min;
-  current->next->x_max = x_max;
-  current->next->y_min = y_min;
-  current->next->y_max = y_max;
-
-  current->next->next = NULL;
-  current->next->prev = current;
-}
-
-void removeObstacle(coords ** head) {
-  coords * next_coords = NULL;
-  if (*head == NULL) {
-    return;
-  }
-  next_coords = (*head)->next;
-  free(*head);
-  *head = next_coords;
-
-  return;
-}
-
-int intersection(coords * head, node * start) { //Determine if the line and object intersect 
-
-}
-
-int determinePath(double *x_start, double *y_start, coords * head) {
-  node * top;
-  top  = (node *) malloc(sizeof(node));
-  top->x = *x_start;
-  top->y = *y_start;
-
-
-  return 0;
-}
-
-
-
 int cap(int input, int maximum) {
   int output;
   if (abs(input) > maximum) output = input/abs(input)*maximum;
@@ -140,13 +54,16 @@ double drive(double distance, int dir)
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;// / CIRCUMFERENCE;
-  int offset_power = 10;
+  int offset_power = 8;
   servo_grabber.write(-45);
   int t = millis();
   while(rotations < expectedRotations) {
     if(dir) { // Drive forward
       servo_left.writeMicroseconds(1600+mod_left);
       servo_right.writeMicroseconds(1400+mod_right);
+      Serial.println("Driving forward...");
+      Serial.print(mod_left);
+      Serial.print(mod_right);
     }
     else {// Drive backward
       servo_left.writeMicroseconds(1400+mod_left);
@@ -162,7 +79,7 @@ double drive(double distance, int dir)
       rotations_r += 0.0625;
     }
 
-    if (rotations_l > rotations_r &&  millis()-t  > 1) { //If left wheel faster -> slow down left, speed up right
+    if (rotations_l > rotations_r &&  millis()-t  > 10) { //If left wheel faster -> slow down left, speed up right
         if(dir) {
           mod_left -= offset_power;
           mod_right -= offset_power;
@@ -171,7 +88,7 @@ double drive(double distance, int dir)
           mod_right += offset_power;
         }
         t = millis();
-      } else if (rotations_r > rotations_l && millis()-t > 1) { // If right wheel faster -> speed up left, slow down right
+      } else if (rotations_r > rotations_l && millis()-t > 10) { // If right wheel faster -> speed up left, slow down right
         if(dir) {
           mod_left += offset_power;
           mod_right += offset_power;
@@ -181,8 +98,8 @@ double drive(double distance, int dir)
         }
         t = millis();
       }
-    mod_left = cap(mod_left, 40);
-    mod_right = cap(mod_right, 40);
+    mod_left = cap(mod_left, 45);
+    mod_right = cap(mod_right, 45);
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
@@ -228,6 +145,7 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
   while(rotations < expectedRotations) {
     left = digitalRead(encoderLeft);
     right = digitalRead(encoderRight);
+    Serial.println(right);
     if(left != prev_left) { //1/8th of rotation made left
       rotations_l+= (0.0625);
     }
@@ -258,10 +176,6 @@ int moveTo(double * x_start, double * y_start, double x_end, double y_end, doubl
   double distance = sqrt(pow(dx, 2)+pow(dy, 2));
   double psi = atan2(dy, dx);
   if(psi < 0) psi += 6.28;
-  Serial.print("Phi: ");
-  Serial.print(*phi);
-  Serial.print(" Psi: ");
-  Serial.println(psi);
   turn(psi, phi);
   *phi = psi;
   distance = drive(distance, 1);

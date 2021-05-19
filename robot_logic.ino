@@ -45,7 +45,7 @@ void loop () {
   //servo_right.writeMicroseconds(1400);
   Serial.println(phi);
   delay(2000);
-  //moveTo(1, 1, 0, 0.5, &phi);
+  moveTo(&x, &y, 0, 0, &phi);
   Serial.println(phi);
   //brake();
   //servo_left.writeMicroseconds(1500);
