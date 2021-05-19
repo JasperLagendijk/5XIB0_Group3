@@ -37,7 +37,7 @@ void setup() {
 
 void loop () {
   delay(1000);
-  moveTo(0, 0, 1, 1, &phi);
+  moveTo(&x, &y, 1, 1, &phi);
   //drive(1, 1);
   //int psi = 0.25*3.141*i;
   //turn(psi, &phi);
@@ -45,7 +45,7 @@ void loop () {
   //servo_right.writeMicroseconds(1400);
   Serial.println(phi);
   delay(2000);
-  moveTo(1, 1, 0, 0.5, &phi);
+  //moveTo(1, 1, 0, 0.5, &phi);
   Serial.println(phi);
   //brake();
   //servo_left.writeMicroseconds(1500);

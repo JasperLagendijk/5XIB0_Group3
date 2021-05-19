@@ -83,9 +83,9 @@ void removeObstacle(coords ** head) {
   if (*head == NULL) {
     return;
   }
-  next_node = (*head)->next;
+  next_coords = (*head)->next;
   free(*head);
-  *head = next_node;
+  *head = next_coords;
 
   return;
 }
@@ -94,7 +94,7 @@ int intersection(coords * head, node * start) { //Determine if the line and obje
 
 }
 
-int determinePath(*x_start, *y_start, coords * head) {
+int determinePath(double *x_start, double *y_start, coords * head) {
   node * top;
   top  = (node *) malloc(sizeof(node));
   top->x = *x_start;
