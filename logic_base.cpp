@@ -16,7 +16,7 @@ struct node {
 
 };
 
-coords * head;
+//coords * head;
 
 void addNode(node * head, double x, double y) {
   node * current = head;
