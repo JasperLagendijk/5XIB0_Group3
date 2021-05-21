@@ -67,7 +67,7 @@ void removeObstacle(coords ** head) {
   return;
 }
 
-int intersection(coords * head, node * start) { //Determine if the line and object intersect 
+coords intersection(coords * head, node * start) { //Determine if the line and object intersect 
   //Step 1: Determine equation for m
   double x1 = start->x;
   double y1 = start->y;
@@ -80,7 +80,9 @@ int intersection(coords * head, node * start) { //Determine if the line and obje
   
   //Step 2: loop through coords and determine intersection
   coords * current  = head;
+  coords intersect;
   while(current != NULL) {
+	bool inter = 0;
     //Step 2.1 setup new doubles/ints
     double y_min = min(current->y_min, current->y_max);
     double y_max = max(current->y_min, current->y_max);
@@ -88,13 +90,37 @@ int intersection(coords * head, node * start) { //Determine if the line and obje
     double x_max = max(current->x_min, current->x_max);
 
     //Step 2.2 check intersection on y axis
-    //double y = 
+    double y_bot = m*x_min+b;
+	double y_top = m*x_max+b;
   
     //Step 2.3 check intersection on x axis
+	double x_bot = (y_min-b)/m;
+	double x_top = (y_max-b)/m;
+	
+	
+	if(y_bot >= y_min && y_bot <= y_max) {
+			inter = 1;
+	} else if(y_top >= y_min && y_top <= y_max) {
+			inter = 1;
+	} else if(x_bot >= x_min && x_bot <= x_max) {
+			inter = 1;
+	} else if(x_top >= x_min && x_top <= x_max) {
+			inter = 1;
+	}
 
+	if(inter) {
+		if (&intersect != NULL)  {
+		double dc = sqrt(pow((x1-x_min), 2)+pow((y1-y_min), 2));
+		
+		double di = sqrt(pow((x1-intersect.x_min), 2)+pow((y1-intersect.y_min), 2));
+		} else intersect = *current;
+	}
+
+
+	
     current = current->next;
   }
-  
+  return intersect;
 }
 
 int determinePath(double *x_start, double *y_start, coords * head) {
