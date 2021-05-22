@@ -16,8 +16,6 @@ struct node {
 
 };
 
-//coords * head;
-
 void addNode(node * head, double x, double y) {
   node * current = head;
   while(current->next != NULL) {
@@ -67,7 +65,7 @@ void removeObstacle(coords ** head) {
   return;
 }
 
-coords intersection(coords * head, node * start) { //Determine if the line and object intersect 
+coords intersection(coords * head, node * start) { //Determine if the line and object intersect, return intersecting object nearest to start point
   //Step 1: Determine equation for m
   double x1 = start->x;
   double y1 = start->y;
@@ -113,6 +111,7 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 		double dc = sqrt(pow((x1-x_min), 2)+pow((y1-y_min), 2));
 		
 		double di = sqrt(pow((x1-intersect.x_min), 2)+pow((y1-intersect.y_min), 2));
+		if (dc >= di) intersect = *current;
 		} else intersect = *current;
 	}
 
@@ -122,6 +121,7 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
   }
   return intersect;
 }
+
 
 int determinePath(double *x_start, double *y_start, coords * head) {
   node * top;

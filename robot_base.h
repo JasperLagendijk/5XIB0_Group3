@@ -16,10 +16,6 @@
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
 
-//Servo servo_left;
-//Servo servo_right;
-//Servo servo_grabber;
-
 
 double drive(double distance, int dir);
 
