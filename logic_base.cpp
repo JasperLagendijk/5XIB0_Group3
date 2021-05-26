@@ -1,4 +1,5 @@
 #include <Arduino.h>
+//#include "logic_base.h"
 struct coords {
   double x_max;
   double y_max;
@@ -79,9 +80,10 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
   //Step 2: loop through coords and determine intersection
   coords * current  = head;
   coords intersect;
+  intersect.x_max = -1;
   while(current != NULL) {
 	bool inter = 0;
-    //Step 2.1 setup new doubles/ints
+	//Step 2.1 setup new doubles/ints
     double y_min = min(current->y_min, current->y_max);
     double y_max = max(current->y_min, current->y_max);
     double x_min = min(current->x_min, current->x_max);
@@ -89,11 +91,11 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 
     //Step 2.2 check intersection on y axis
     double y_bot = m*x_min+b;
-	double y_top = m*x_max+b;
+	  double y_top = m*x_max+b;
   
     //Step 2.3 check intersection on x axis
-	double x_bot = (y_min-b)/m;
-	double x_top = (y_max-b)/m;
+	  double x_bot = (y_min-b)/m;
+	  double x_top = (y_max-b)/m;
 	
 	
 	if(y_bot >= y_min && y_bot <= y_max) {
@@ -107,16 +109,14 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 	}
 
 	if(inter) {
-		if (&intersect != NULL)  {
+
+		if (intersect.x_max != -1)  {
 		double dc = sqrt(pow((x1-x_min), 2)+pow((y1-y_min), 2));
 		
 		double di = sqrt(pow((x1-intersect.x_min), 2)+pow((y1-intersect.y_min), 2));
 		if (dc >= di) intersect = *current;
 		} else intersect = *current;
 	}
-
-
-	
     current = current->next;
   }
   return intersect;

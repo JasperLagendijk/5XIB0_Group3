@@ -61,9 +61,6 @@ double drive(double distance, int dir)
     if(dir) { // Drive forward
       servo_left.writeMicroseconds(1600+mod_left);
       servo_right.writeMicroseconds(1400+mod_right);
-      Serial.println("Driving forward...");
-      Serial.print(mod_left);
-      Serial.print(mod_right);
     }
     else {// Drive backward
       servo_left.writeMicroseconds(1400+mod_left);
@@ -79,7 +76,7 @@ double drive(double distance, int dir)
       rotations_r += 0.0625;
     }
 
-    if (rotations_l > rotations_r &&  millis()-t  > 10) { //If left wheel faster -> slow down left, speed up right
+    if (rotations_l > rotations_r &&  millis()-t  > 50) { //If left wheel faster -> slow down left, speed up right
         if(dir) {
           mod_left -= offset_power;
           mod_right -= offset_power;
@@ -88,7 +85,7 @@ double drive(double distance, int dir)
           mod_right += offset_power;
         }
         t = millis();
-      } else if (rotations_r > rotations_l && millis()-t > 10) { // If right wheel faster -> speed up left, slow down right
+      } else if (rotations_r > rotations_l && millis()-t > 50) { // If right wheel faster -> speed up left, slow down right
         if(dir) {
           mod_left += offset_power;
           mod_right += offset_power;
@@ -98,8 +95,8 @@ double drive(double distance, int dir)
         }
         t = millis();
       }
-    mod_left = cap(mod_left, 45);
-    mod_right = cap(mod_right, 45);
+    mod_left = cap(mod_left, 38);
+    mod_right = cap(mod_right, 38);
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
@@ -123,16 +120,16 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
   double distance;// = ((psi-)/2)*WIDTHROBOT;
-   if(psi-*phi <= 0) { // Turn left
+   if(psi-*phi >= 3.141) { // Turn left
     servo_left.writeMicroseconds(1400);
     servo_right.writeMicroseconds(1400);
-    distance = ((psi-*phi+6.2831)/2)*0.104; //WIDTHROBOT;
+    distance = ((abs(psi-*phi))/4)*0.104;//WIDTHROBOT;
   } else { //Turn right
     servo_left.writeMicroseconds(1600);
     servo_right.writeMicroseconds(1600);
-    distance = ((psi-*phi)/2)*0.104; //WIDTHROBOT;
+    distance = ((abs(psi-*phi))/4)*0.104; //WIDTHROBOT;
   }
-  Serial.println(distance);
+  //Serial.println(distance);
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -141,11 +138,13 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;
+  Serial.println(expectedRotations);
+
 
   while(rotations < expectedRotations) {
     left = digitalRead(encoderLeft);
     right = digitalRead(encoderRight);
-    Serial.println(right);
+    //Serial.println(right);
     if(left != prev_left) { //1/8th of rotation made left
       rotations_l+= (0.0625);
     }
@@ -169,10 +168,10 @@ int moveTo(double * x_start, double * y_start, double x_end, double y_end, doubl
   double current_y = * y_start;
   double dx = x_end-*x_start;
   double dy = y_end-*y_start;
-  Serial.print("dx: ");
+  /*Serial.print("dx: ");
   Serial.print(dx);
   Serial.print(" dy: ");
-  Serial.println(dy);
+  Serial.println(dy);*/
   double distance = sqrt(pow(dx, 2)+pow(dy, 2));
   double psi = atan2(dy, dx);
   //if(psi < 0) psi += 6.28;

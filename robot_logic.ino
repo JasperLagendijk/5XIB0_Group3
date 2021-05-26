@@ -7,20 +7,7 @@ double y = 0;
 
 node * start = NULL;
 coords intersect_struct;
-head = (coords *) malloc(sizeof(coords));
-head->x_min = 5;
-head->x_max = 6;
-head->y_min = -3;
-head->y_max = 3;
-if (head == NULL) {
-  return -1;
-}
-
-start = (node *) malloc(sizeof(coords));
-start->x = 0;
-start->y = 0;
-
-addNode(start, 10, 0);
+coords * head = NULL;
 
 void setup() {
   Serial.begin(9600);
@@ -32,8 +19,33 @@ void setup() {
   pinMode(ultrasoundSensor, INPUT);
   pinMode(grabberServo, OUTPUT);
   pinMode(ultrasoundServo, OUTPUT);
+  
+  head = (coords *) malloc(sizeof(coords));
+  head->x_min = 5;
+  head->y_min = -3;
+  head->x_max = 6;
+  head->y_max = 3;
+  head->next = NULL;
+  head->prev = NULL;
+
+  start = (node *) malloc(sizeof(node));
+  start->x = 0;
+  start->y = 0;
+  addNode(start, 10, 0);
+  intersect_struct = intersection(head, start);
+  intersect_struct.x_max = 10;
+  Serial.println(intersect_struct.x_min);
 }
 
 void loop () {
-  
+  Serial.println(phi);
+  moveTo(&x, &y, 0.2, 0.2, &phi);
+  Serial.println(phi);
+  delay(1000);
+  moveTo(&x, &y, 0.8, 0, &phi);
+  Serial.println(phi);
+  delay(1000);
+  moveTo(&x, &y, 0, 0, &phi);
+  Serial.println(phi);
+  delay(1000);
 }
