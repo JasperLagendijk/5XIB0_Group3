@@ -28,6 +28,26 @@ void addNode(node * head, double x, double y) {
   current->next->next = NULL;
 }
 
+void addNode2nd(node * head, double x, double y) { //Adds a node at the second to last place
+  node * current  = head;
+  double x_temp;
+  double y_temp;
+  while (current->next != NULL) {
+    current = current->next;
+  }
+  //Swap out x and y
+  x_temp = current->x;
+  y_temp = current->y;
+  current->x = x;
+  current->y = y;
+
+  //add next node
+  current->next = (node *) malloc(sizeof(node));
+  current->next->x = x_temp;
+  current->next->y = y_temp;
+  current->next->next = NULL; 
+}
+
 void popNode(node ** head) {
   node * next_node = NULL;
   if (*head == NULL) return;
@@ -80,7 +100,7 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
   //Step 2: loop through coords and determine intersection
   coords * current  = head;
   coords intersect;
-  intersect.x_max = -1;
+  intersect.y_min = -1;
   while(current != NULL) {
 	bool inter = 0;
 	//Step 2.1 setup new doubles/ints
@@ -110,7 +130,7 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 
 	if(inter) {
 
-		if (intersect.x_max != -1)  {
+		if (intersect.y_min != -1)  {
 		double dc = sqrt(pow((x1-x_min), 2)+pow((y1-y_min), 2));
 		
 		double di = sqrt(pow((x1-intersect.x_min), 2)+pow((y1-intersect.y_min), 2));
@@ -123,12 +143,20 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 }
 
 
-int determinePath(double *x_start, double *y_start, coords * head) {
+node * determinePath(double *x_start, double *y_start, coords * head, double x_end, double y_end) {
+  //Initialize the path
   node * top;
+  coords intersect;
   top  = (node *) malloc(sizeof(node));
   top->x = *x_start;
   top->y = *y_start;
 
+  addNode(top, x_end, y_end);
+  
+  intersect = intersection(head, top);
+  if(intersect.y_min != -1) { // Path intersects with an obstacle
+    
+  }
 
-  return 0;
+  return top;
 }

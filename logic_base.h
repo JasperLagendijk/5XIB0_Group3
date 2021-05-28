@@ -26,7 +26,7 @@ void popNode(node ** head);
 void addObstacle(coords * head, double x_min, double x_max, double y_min, double y_max);
 void removeObstacle(coords ** head);
 coords intersection(coords * head, node * start);
-int determinePath(double *x_start, double *y_start, coords * head);
+node * determinePath(double *x_start, double *y_start, coords * head);
 
 
 
