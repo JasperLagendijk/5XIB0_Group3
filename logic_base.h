@@ -1,7 +1,5 @@
 #ifndef LOGIC_BASE
 #define LOGIC BASE
-
-//struct coords;
 struct coords {
   double x_max;
   double y_max;

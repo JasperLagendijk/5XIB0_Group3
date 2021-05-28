@@ -143,7 +143,7 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 }
 
 
-node * determinePath(double *x_start, double *y_start, coords * head, double x_end, double y_end) {
+node * determinePath(double *x_start, double *y_start, double *phi, coords * head, double x_end, double y_end) {
   //Initialize the path
   node * top;
   coords intersect;
@@ -155,6 +155,21 @@ node * determinePath(double *x_start, double *y_start, coords * head, double x_e
   
   intersect = intersection(head, top);
   if(intersect.y_min != -1) { // Path intersects with an obstacle
+    double dx = x_end-*x_start;
+    double dy = y_end-*y_start;
+    double psi = atan2(dy, dx);
+
+    if (psi >= -0.7854 && psi <= 0.7854 ) { //Driving in the positive x direction
+      
+    } else if (psi >= 0.7854 && psi <= 3.9269) { //Driving in the positive y direction
+      
+    } else if (psi <= -0.7854 && psi >= -3.9269) { //Driving in the negative y direction
+      
+    } else if (psi <= -3.9269 && psi >= 3.9269) { //Driving in the negative x direction
+      
+    }
+
+
     
   }
 
