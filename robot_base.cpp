@@ -1,6 +1,7 @@
 #include <Servo.h>
 #include <Arduino.h>
 #include <math.h>
+#include "logic_base.h"
 
 Servo servo_left;
 Servo servo_right;
@@ -188,4 +189,16 @@ int moveTo(double * x_start, double * y_start, double x_end, double y_end, doubl
 
 
 
+}
+
+
+void drivePath(node * top, double * x_start, double * y_start, double * phi) {
+	while(top->next != NULL) {
+		*x_start = top->x;
+		*y_start = top->y;
+		double x_end = top->next->x;
+		double y_end = top->next->y;
+		moveTo(x_start, y_start, x_end, y_end, phi);
+		popNode(*top);
+	}
 }

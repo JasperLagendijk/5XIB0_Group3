@@ -40,7 +40,6 @@ void addNode2nd(node * head, double x, double y) { //Adds a node at the second t
   y_temp = current->y;
   current->x = x;
   current->y = y;
-
   //add next node
   current->next = (node *) malloc(sizeof(node));
   current->next->x = x_temp;
@@ -128,13 +127,11 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 			inter = 1;
 	}
 
-	if(inter) {
-
-		if (intersect.y_min != -1)  {
+	if(inter) {  //Intersection present
+		if (intersect.y_min != -1)  { //Previous intersection present
 		double dc = sqrt(pow((x1-x_min), 2)+pow((y1-y_min), 2));
-		
 		double di = sqrt(pow((x1-intersect.x_min), 2)+pow((y1-intersect.y_min), 2));
-		if (dc >= di) intersect = *current;
+		if (dc <= di) intersect = *current; //current intersection further away then stored intersection
 		} else intersect = *current;
 	}
     current = current->next;
@@ -146,32 +143,64 @@ coords intersection(coords * head, node * start) { //Determine if the line and o
 node * determinePath(double *x_start, double *y_start, double *phi, coords * head, double x_end, double y_end) {
   //Initialize the path
   node * top;
+  node * current;
   coords intersect;
+  double offset = 0.05;
   top  = (node *) malloc(sizeof(node));
   top->x = *x_start;
   top->y = *y_start;
 
   addNode(top, x_end, y_end);
-  
   intersect = intersection(head, top);
-  if(intersect.y_min != -1) { // Path intersects with an obstacle
-    double dx = x_end-*x_start;
-    double dy = y_end-*y_start;
-    double psi = atan2(dy, dx);
-
-    if (psi >= -0.7854 && psi <= 0.7854 ) { //Driving in the positive x direction
-      
-    } else if (psi >= 0.7854 && psi <= 3.9269) { //Driving in the positive y direction
-      
-    } else if (psi <= -0.7854 && psi >= -3.9269) { //Driving in the negative y direction
-      
-    } else if (psi <= -3.9269 && psi >= 3.9269) { //Driving in the negative x direction
-      
-    }
-
-
+  do {
+	if(intersect.y_min != -1) { // Path intersects with an obstacle
+		double dx = x_end-*x_start;
+		double dy = y_end-*y_start;
+		double psi = atan2(dy, dx);
+		if (psi >= -0.7854 && psi <= 0.7854 ) { //Driving in the positive x direction
+			if (abs(intersect.y_min-*y_start) > abs(intersect.y_max-*y_start)) {//Drive north
+			addNode2nd(top, intersect.x_min-offset, intersect.y_max+offset);
+			addNode2nd(top, intersect.x_max+offset, intersect.y_max+offset);
+			}
+			else {//Drive south
+			addNode2nd(top, intersect.x_min-offset, intersect.y_min-offset);
+			addNode2nd(top, intersect.x_max+offset, intersect.y_min-offset);
+			}	
+		} else if (psi >= 0.7854 && psi <= 3.9269) { //Driving in the positive y direction
+			if (abs(intersect.x_min-*x_start) > abs(intersect.x_max-*x_start)) { //Drive east
+			addNode2nd(top, intersect.x_max+offset, intersect.y_min-offset);
+			addNode2nd(top, intersect.x_max+offset, intersect.y_max+offset);
+			}
+			else { //Drive west
+			addNode2nd(top, intersect.x_min-offset, intersect.y_min-offset);
+			addNode2nd(top, intersect.x_min-offset, intersect.y_max+offset);
+			}
+		} else if (psi <= -0.7854 && psi >= -3.9269) { //Driving in the negative y direction
+			if (abs(intersect.x_min-*x_start) > abs(intersect.x_max-*x_start)) { //Drive east
+			addNode2nd(top, intersect.x_max+offset, intersect.y_max+offset);
+			addNode2nd(top, intersect.x_max+offset, intersect.y_min-offset);	
+			}
+			else { //Drive west
+			addNode2nd(top, intersect.x_min-offset, intersect.y_max+offset);
+			addNode2nd(top, intersect.x_min-offset, intersect.y_min-offset);
+			}
+		} else if (psi <= -3.9269 && psi >= 3.9269) { //Driving in the negative x direction
+			if (abs(intersect.y_min-*y_start) > abs(intersect.y_max-*y_start)) {//Drive north
+			addNode2nd(top, intersect.x_max+offset, intersect.y_max+offset);
+			addNode2nd(top, intersect.x_min-offset, intersect.y_max+offset);
+			}
+			else {//Drive south
+			addNode2nd(top, intersect.x_max+offset, intersect.y_min-offset);
+			addNode2nd(top, intersect.x_min-offset, intersect.y_min-offset);
+			}
+		}
     
-  }
-
+	}
+	current = top;
+	while(current->next->next != NULL) {
+		current = current->next;
+	}
+	intersect = intersection(head, current);
+} while(intersect.y_min != -1);
   return top;
 }
