@@ -1,5 +1,5 @@
 #ifndef LOGIC_BASE
-#define LOGIC BASE
+#define LOGIC_BASE
 struct coords {
   double x_max;
   double y_max;
@@ -24,8 +24,7 @@ void popNode(node ** head);
 void addObstacle(coords * head, double x_min, double x_max, double y_min, double y_max);
 void removeObstacle(coords ** head);
 coords intersection(coords * head, node * start);
-node * determinePath(double *x_start, double *y_start, coords * head);
-
+node * determinePath(double *x_start, double *y_start, double *phi, coords * head, double x_end, double y_end);
 
 
 
