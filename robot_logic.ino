@@ -1,5 +1,6 @@
 #include "robot_base.h"
 #include "logic_base.h"
+#include "sensor_base.h"
 
 double phi = 1.5708;
 double x = 0;
@@ -34,9 +35,10 @@ void setup() {
 }
 
 void loop () {
-  determinePath(&x, &y, &phi, head, 1, 0);
-  drivePath(start, &x, &y, &phi);
-
+  //determinePath(&x, &y, &phi, head, 1, 0);
+  //drivePath(start, &x, &y, &phi);
+  findObstacleUS (&x, &y, &phi, head);
+  delay(1000);
 
   
 }
