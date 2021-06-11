@@ -37,8 +37,8 @@ void setup() {
 void loop () {
   //determinePath(&x, &y, &phi, head, 1, 0);
   //drivePath(start, &x, &y, &phi);
-  findObstacleUS (&x, &y, &phi, head);
-  delay(1000);
-
+  //findObstacleUS (&x, &y, &phi, head);
+  //delay(1000);
+  Serial.println(digitalRead(encoderLeft));
   
 }
