@@ -75,7 +75,6 @@ void findObstacleUS(double *x, double *y, double *phi, coords* head) {
         right_distance = measure_US(right_angle);
         right_angle = right_angle-ANGLE_CHANGE;
       }
-      Serial.println("Exit sweep");
       for(int l =1; l < 3; l++) { //Determine right edge angle
         delay(500);
         angle_change = 6/l;

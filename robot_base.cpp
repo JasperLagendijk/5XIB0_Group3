@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include "logic_base.h"
+#include "sensor_base.h"
 
 Servo servo_left;
 Servo servo_right;
@@ -17,6 +18,9 @@ Servo servo_grabber;
 #define ultrasoundServo 11 //PWM
 #define servoLeft 12
 #define servoRight 13
+
+#define grabberPin0 4
+#define grabberPin1 5
 
 #define CIRCUMFERENCE 2*0.034*PI // In meters
 #define WIDTHROBOT 0.104 // In meters
@@ -44,7 +48,7 @@ double drive(double distance, int dir)
   servo_grabber.attach(grabberServo);
   servo_left.attach(servoLeft);
   servo_right.attach(servoRight);
-
+  int t2;
   int left, right;
   int mod_left = 0;
   int mod_right = 0;
@@ -101,11 +105,29 @@ double drive(double distance, int dir)
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
-    if(0) { //If a cliff is detected, stop and return current distance travelled
+    byte sensors = sensorArray();
+    if(0) {//sensors > 0) { //If a cliff is detected, stop and return current distance travelled
       brake();
       servo_left.detach();
       servo_right.detach();
+      //Make new obstacle
+      /*if (sensors >= 9) // Addobstacle on frontside
+      else if (sensors & 8) // Addobstacle on rightside
+      else if (sensors & 1)*/ // Addobstacle on leftside
+
+      
       return rotations*circumference;
+    }
+    if ((analogRead(grabberPin0)>250 || analogRead(grabberPin1)>250) && t2 == 0){              //When the infrared sensor measures that a block is in front
+      servo_grabber.attach(grabberServo);
+      servo_grabber.write(100);                          //Open the grabber 
+      t2 = millis();                        //close the grabber
+      
+      //delay(2000);
+    }
+    if (millis()-t2 >= 300 && t2 != 0) {
+      servo_grabber.write(180);
+      t2 = 0;
     }
   }
   brake();
@@ -124,13 +146,12 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
    if(psi-*phi >= 3.141) { // Turn left
     servo_left.writeMicroseconds(1400);
     servo_right.writeMicroseconds(1400);
-    distance = ((abs(psi-*phi))/4)*0.104;//WIDTHROBOT;
+    distance = ((abs(psi-*phi))/2              )*0.104;//WIDTHROBOT;
   } else { //Turn right
     servo_left.writeMicroseconds(1600);
     servo_right.writeMicroseconds(1600);
-    distance = ((abs(psi-*phi))/4)*0.104; //WIDTHROBOT;
+    distance = ((abs(psi-*phi))/2)*0.104; //WIDTHROBOT;
   }
-  //Serial.println(distance);
   int left, right;
   double circumference = 0.21;
   int prev_left=left;
@@ -139,13 +160,11 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
   double rotations_l = 0;
   double rotations_r = 0;
   double expectedRotations = distance/circumference;
-  Serial.println(expectedRotations);
-
-
+  Serial.println(psi-*phi);
+  Serial.println(distance);
   while(rotations < expectedRotations) {
     left = digitalRead(encoderLeft);
     right = digitalRead(encoderRight);
-    //Serial.println(right);
     if(left != prev_left) { //1/8th of rotation made left
       rotations_l+= (0.0625);
     }
@@ -155,10 +174,9 @@ void turn(double psi, double * phi) { //Turn to psi, from starting rotation phi,
     rotations = (rotations_l+rotations_r)/2;
     prev_left = left;
     prev_right = right;
-    //Serial.println(rotations);
-
     }
     brake();
+    *phi = psi;
     servo_grabber.detach();
     servo_left.detach();
     servo_right.detach();
@@ -169,10 +187,6 @@ int moveTo(double * x_start, double * y_start, double x_end, double y_end, doubl
   double current_y = * y_start;
   double dx = x_end-*x_start;
   double dy = y_end-*y_start;
-  /*Serial.print("dx: ");
-  Serial.print(dx);
-  Serial.print(" dy: ");
-  Serial.println(dy);*/
   double distance = sqrt(pow(dx, 2)+pow(dy, 2));
   double psi = atan2(dy, dx);
   //if(psi < 0) psi += 6.28;

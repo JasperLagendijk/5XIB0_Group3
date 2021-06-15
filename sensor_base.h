@@ -5,6 +5,7 @@
 
 void findObstacleUS(double *x, double *y, double *phi, coords* head);
 byte sensorArray();
+int availableMemory();
 
 
 
