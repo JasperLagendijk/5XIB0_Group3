@@ -23,6 +23,6 @@ double drive(double distance, int dir);
 void brake();
 void turn(double psi, double * phi);
 void moveTo(double *x_start, double *y_start, double x_end, double y_end, double * phi);
-void drivePath(node * top, double * x_start, double * y_start, double * phi);
+void drivePath(node * top, double * x_start, double * y_start, double * phi, coords *head);
 
 #endif

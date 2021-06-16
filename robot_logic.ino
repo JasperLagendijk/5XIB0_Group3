@@ -39,14 +39,9 @@ void loop () {
   //drivePath(start, &x, &y, &phi);
   //findObstacleUS (&x, &y, &phi, head);
   //delay(1000);
-  moveTo(&x, &y, 0.3, 0, &phi);
-  delay(500);
-  Serial.print(x);
-  moveTo(&x, &y, 0.3, 0.5, &phi);
-  Serial.print(x);
-  delay(500);
-  moveTo(&x, &y, 0, 0, &phi);
-  Serial.println(x);
+  findObstacleUS(&x, &y, &phi, head);
+  start = determinePath(&x, &y, &phi, head, 0, 1);
+  drivePath(start, &x, &y, &phi, head );
   delay(1000);
   
 }

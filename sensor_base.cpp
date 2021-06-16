@@ -16,7 +16,7 @@
 Servo servo_ultrasound;
 
 int availableMemory() {
-  int size = 1024; // Use 2048 with ATmega328
+  int size = 2048; // Use 2048 with ATmega328
   byte *buf;
 
   while ((buf = (byte *) malloc(--size)) == NULL)
@@ -41,6 +41,7 @@ long measure_US(int angle) {
   pinMode(ultrasoundSensor, INPUT);
   duration = pulseIn(ultrasoundSensor, HIGH);
   distance = duration / 29 / 2;
+  Serial.println(distance);
   return distance;
 }
 
@@ -111,9 +112,10 @@ void findObstacleUS(double *x, double *y, double *phi, coords* head) {
 
 byte sensorArray() {
   byte e = 0;
-  int black = 140;
+  int black = 240;
   
-  analogRead(analogPin0); 
+  //analogRead(analogPin0);
+  Serial.println(analogRead(analogPin0));
   delay(10);
   if(analogRead(analogPin0) < black) e += 1;//DigitalValue0 = 1;
   delay(10);
@@ -132,5 +134,5 @@ byte sensorArray() {
   delay(10);
   if(analogRead(analogPin3) < black) e+=8;// DigitalValue3 = 1;
   
-  return e;
+  return 0;//e;
 }

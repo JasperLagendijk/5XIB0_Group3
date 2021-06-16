@@ -106,16 +106,10 @@ double drive(double distance, int dir)
     prev_left = left;
     prev_right = right;
     byte sensors = sensorArray();
-    if(0) {//sensors > 0) { //If a cliff is detected, stop and return current distance travelled
+    if(sensors > 0) {       //If a cliff is detected, stop and return current distance travelled
       brake();
       servo_left.detach();
-      servo_right.detach();
-      //Make new obstacle
-      /*if (sensors >= 9) // Addobstacle on frontside
-      else if (sensors & 8) // Addobstacle on rightside
-      else if (sensors & 1)*/ // Addobstacle on leftside
-
-      
+      servo_right.detach(); 
       return rotations*circumference;
     }
     if ((analogRead(grabberPin0)>250 || analogRead(grabberPin1)>250) && t2 == 0){              //When the infrared sensor measures that a block is in front
@@ -197,21 +191,24 @@ int moveTo(double * x_start, double * y_start, double x_end, double y_end, doubl
   current_y += distance*sin(psi);
   *x_start = current_x;
   *y_start = current_y;
-  if(current_x == x_end && current_y == y_end) { // Destination reached
+  if(abs(current_x - x_end) <= 0.05 && abs(current_y - y_end) <= 0.05)  { // Destination reached
     return 0;
-  } else return -1;   // Otherwise: obstacle encountered
-
-
-
+  } else return sensorArray();   // Otherwise: obstacle encountered
 }
 
-void drivePath(node * top, double * x_start, double * y_start, double * phi) {
+void drivePath(node * top, double * x_start, double * y_start, double * phi, coords * head) {
 	while(top->next != NULL) {
 		*x_start = top->x;
 		*y_start = top->y;
 		double x_end = top->next->x;
 		double y_end = top->next->y;
-		moveTo(x_start, y_start, x_end, y_end, phi);
+		int sensor = moveTo(x_start, y_start, x_end, y_end, phi);
+    if(sensor > 0) {
+      if (*phi >= -0.7854 && *phi <= 0.7854 )  addObstacle(head, *x_start-0.05, *y_start-0.05, *x_start+0.1, *y_start+0.05);  //Driving in the positive x direction
+      else if (*phi >= 0.7854 && *phi <= 3.9269)  addObstacle(head, *x_start-0.05, *y_start-0.05, *x_start+0.05, *y_start+0.1);                //Driving in the positive y direction
+      else if (*phi <= -0.7854 && *phi >= -3.9269) addObstacle(head, *x_start-0.05, *y_start-0.1, *x_start+0.05, *y_start+0.05);               //Driving in the negative y direction
+      else if (*phi <= -3.9269 && *phi >= 3.9269) addObstacle(head, *x_start-0.1, *y_start-0.05, *x_start+0.05, *y_start+0.05);                //Driving in the negative x direction
+    }
 		popNode(&top);
 	}
 }
