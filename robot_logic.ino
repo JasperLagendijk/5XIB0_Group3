@@ -22,10 +22,10 @@ void setup() {
   pinMode(ultrasoundServo, OUTPUT);
   
   head = (coords *) malloc(sizeof(coords));
-  head->x_min = 0.4;
+  head->x_min = -0.4;
   head->y_min = -0.2;
-  head->x_max = 0.5;
-  head->y_max = 0.3;
+  head->x_max = -0.5;
+  head->y_max = -0.3;
   head->next = NULL;
   head->prev = NULL;
 
@@ -39,9 +39,30 @@ void loop () {
   //drivePath(start, &x, &y, &phi);
   //findObstacleUS (&x, &y, &phi, head);
   //delay(1000);
-  findObstacleUS(&x, &y, &phi, head);
-  start = determinePath(&x, &y, &phi, head, 0, 1);
-  drivePath(start, &x, &y, &phi, head );
-  delay(1000);
+  moveTo(&x, &y, 0, 100, &phi);
+  Serial.println("Newline");
+  Serial.println(x);
+  Serial.println(y);
+  Serial.println(phi);
+  delay(500);
+  // moveTo(&x, &y, 0.4 ,y, &phi);
+  //  Serial.println("Newline");
+  // Serial.println(x);
+  // Serial.println(y);
+  // Serial.println(phi);
+  // delay(500);
+  // moveTo(&x,&y, 0.4 ,1,&phi);
+  //  Serial.println("Newline");
+  // Serial.println(x);
+  // Serial.println(y);
+  // Serial.println(phi);
+  // delay(500);
+  // moveTo(&x, &y, 0, 1, &phi);
+  //  Serial.println("Newline");
+  //  Serial.println(x);
+  // Serial.println(y);
+  // Serial.print(phi);
+  // delay(10000);
+  
   
 }
